@@ -11,24 +11,24 @@ function playMasterMain() {
 
 function playGame() {
   
-  const MAX_ROUNDS = 6;
+  const MAX_ATTEMPTS = 6;
   const CODE_LENGTH = 4;
 
   const totalPlayers = getTotalPlayers();
   const secretCode = getSecretCode(CODE_LENGTH,totalPlayers);
-  console.writeln(`El código secreto es: ****`);
+  console.writeln(`El código secreto es: **** ${secretCode}`);
  
   let proposedCode = [];
-  let breakerResults = [];
+  let proposedCombinationsResults = [];
   let codeFound = false;
   let msg;
   
-  for (let i = 0; !codeFound && i < MAX_ROUNDS; i++) {
+  for (let i = 0; !codeFound && i < MAX_ATTEMPTS; i++) {
     proposedCode[i] =  getProposedCode(CODE_LENGTH, i);
-    breakerResults[i]=[];
-    codeFound = getRoundResult(proposedCode[i], secretCode,breakerResults[i]);
+    proposedCombinationsResults[i]=[];
+    codeFound = getRoundResult(proposedCode[i], secretCode,proposedCombinationsResults[i]);
     
-    drawBoard(MAX_ROUNDS, proposedCode, breakerResults);
+    showBoard(MAX_ATTEMPTS, proposedCode, proposedCombinationsResults);
     if (codeFound) {
       msg = `Felicidades, has encontrado el código en ${i + 1} intentos.`;
     } else {
@@ -77,9 +77,9 @@ function playGame() {
       }
       else{
         let randomNumber = Math.random() * COLORS.length;
-        code[i] = randomNumber - randomNumber % 1 +1;
+        code[i] = randomNumber - randomNumber % 1;
       }
-    }
+    } console.writeln(code);
     return code;
 
     function showMenu(COLORS) {
@@ -128,7 +128,7 @@ function playGame() {
   }
 
 
-  function drawBoard(maxRounds, proposedCodes, results) {
+  function showBoard(maxRounds, proposedCodes, results) {
    
     console.writeln("********** proposedCombination *****            ***RESULTsS*****");
     
