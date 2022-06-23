@@ -3,43 +3,78 @@ const console = new Console();
 playMasterMain();
 
 function playMasterMain() {
-    let repeatGame;
+    let continueDialog = initYesNoDialog('Quieres jugar de nuevo?');
     do {
-        playGame();
-        repeatGame = createYesNoDialog('Quieres jugar de nuevo?');
-   } while (repeatGame.read());
-    console.writeln("¡Hasta pronto!");
+        const game = initGame();
+        game.play();
+        continueDialog.read(); 
+   } while (repeatGame.isAfirmative);
 }
 
-function playGame() {
+function initGame() {
     let game = {
+        turn : 0,
+        MAX_PLAYERS : 2,
         MAX_ATTEMPTS: 10,
         CODE_LENGTH: 4,
         totalPlayers : 2,
-        //secretCode: getSecretCode(CODE_LENGTH, totalPlayers),
+        secretCode: [],
+        proposedCombination: [],
+
+        play: function(){
+            this.secretCode = getSecretCode();
+        },
+
+        getAmountDialog(min,max,question){
+            return {
+                min: min,
+                max: max,
+                question: question,
+                answer: 0,
+
+                read: function () {
+                    let error = false;
+                    do {
+                        answer = console.readNumber(`${this.question} ("${this.min}-${this.max}"):`);
+                        error = !this.isAfirmative() && !this.isNegative();
+                        if (error) {
+                            console.writeln('Has introducido una respuesta incorrecta');
+                        }
+                    }while(error);
+                },
+            }
+        },
+        getSecretCode: function(){
+
+        },
+
 
     }
 }
 
-function createYesNoDialog(dialogText) {
+function initYesNoDialog(dialogText) {
     return {
-        afirmative: true,
-        negative: false,
+        dialogText : dialogText,
+        answer : '',
         read: function () {
-            let error;
+            let error = false;
             do {
-                let answer = console.readString(`${dialogText} ("si/no"):`);
-                if (answer === 'si') {
-                    return this.afirmative;
+                answer = console.readString(`${this.dialogText} ("si/no"):`);
+                error = !this.isAfirmative() && !this.isNegative();
+                if (error) {
+                    console.writeln('Has introducido una respuesta incorrecta');
                 }
-                if (answer === 'no') {
-                    return this.negative;
-                }
-                console.writeln('Has introducido una respuesta incorrecta');
-                error = true;
             }while(error);
+        },
+        
+        isAfirmative: function(){
+            return this.answer === 'si';
+        },
+
+        isNegative: function(){
+            return this.answer === 'no';
         }
-    }
+ }
 }
 
 
