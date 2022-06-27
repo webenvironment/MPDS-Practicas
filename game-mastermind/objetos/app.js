@@ -7,25 +7,29 @@ function playMasterMain() {
     do {
         const game = initGame();
         game.play();
-        continueDialog.read(); 
-   } while (repeatGame.isAfirmative);
+        continueDialog.read();
+    } while (continueDialog.isAfirmative);
 }
 
 function initGame() {
     let game = {
-        turn : 0,
-        MAX_PLAYERS : 2,
+        turn: 0,
+        MAX_PLAYERS: 2,
         MAX_ATTEMPTS: 10,
-        CODE_LENGTH: 4,
-        totalPlayers : 2,
+        nAttempt : 0,
+        COLORS: ["r", "g", "b", "y", "c", "m"],
+        COMBINATION_LENGTH: 4,
+        totalPlayers: 2,
         secretCode: [],
         proposedCombination: [],
 
-        play: function(){
+        play: function () {
             this.secretCode = getSecretCode();
+            this.proposedCombination[0]= this.getProposedCombination();
+            this.showBoard();
         },
 
-        getAmountDialog(min,max,question){
+        getAmountDialog: function(min, max, question) {
             return {
                 min: min,
                 max: max,
@@ -35,27 +39,79 @@ function initGame() {
                 read: function () {
                     let error = false;
                     do {
-                        answer = console.readNumber(`${this.question} ("${this.min}-${this.max}"):`);
+                        this.answer = console.readNumber(`${this.question} ("${this.min}-${this.max}"):`);
                         error = !this.isAfirmative() && !this.isNegative();
                         if (error) {
                             console.writeln('Has introducido una respuesta incorrecta');
                         }
-                    }while(error);
-                },
+                    } while (error);
+                }
             }
         },
-        getSecretCode: function(){
+        getSecretCode: function () {
+            let arrayIndex = [];
+            let index;
+            for (let i = 0; i < length; i++) {
+                do {
+                    index = parseInt(Math.random() * this.COLORS).length;
 
+                } while (this.isRepeated(index, arrayIndex))
+                combination[i] = COLORS[i];
+            }
+            return combination;
         },
 
+        isRepeated: function (element, arrayElements) {
+            let isRepeated = false;
+            for (let i = 0; i < arrayElements.length; i++) {
+                if (element === arrayElements[i]) {
+                    isRepeated = true;
+                }
+            }
+            return isRepeated;
+        },
 
+        getProposedCombination: function() {
+            let proposedCombination;
+            do {
+              proposedCombination = console.readString("Propón una combinación:");
+            } while (!isValidCombination(proposedCombination));
+            return proposedCombination;
+      
+            function isValidCombination(proposedCombination) {
+                let isValid = true;
+                if (proposedCombination.length !== this.COMBINATION_LENGTH) {
+                  isValid = false;
+                  console.writeln(`La longitud de la combinación propuesta es incorrecta`);
+                } else if (!isValidColors(proposedCombination)) {
+                  isValid = false;
+                  console.writeln(`Colores incorrectos, deben ser: rgybmc`);
+                } else if (hasRepeatedColors(proposedCombination)) {
+                  isValid = false;
+                  console.writeln(`La combinación propuesta contiene colores repetidos`);
+                }
+                return isValid; 
+        }
+    },
+        showBoard: function(){
+            let msg = `\n${nAttempt + 1} intento${nAttempt + 1 == 1 ? '' : 's'}:\
+                 \n****\n`;
+            for (let i = 0; i < this.proposedCombination,length; i++) {
+                msg += `${proposedCombination[i]} --> ${result[i][indexBlacks]} negras y ${result[i][indexWhites]} blancas\n`;
+              }
+              console.writeln(msg);
+        },
     }
+    return game;
+
+
 }
+
 
 function initYesNoDialog(dialogText) {
     return {
-        dialogText : dialogText,
-        answer : '',
+        dialogText: dialogText,
+        answer: '',
         read: function () {
             let error = false;
             do {
@@ -64,17 +120,17 @@ function initYesNoDialog(dialogText) {
                 if (error) {
                     console.writeln('Has introducido una respuesta incorrecta');
                 }
-            }while(error);
+            } while (error);
         },
-        
-        isAfirmative: function(){
+
+        isAfirmative: function () {
             return this.answer === 'si';
         },
 
-        isNegative: function(){
+        isNegative: function () {
             return this.answer === 'no';
         }
- }
+    }
 }
 
 
