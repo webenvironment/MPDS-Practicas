@@ -27,14 +27,15 @@ function initGame() {
 
             const secretCombination = initSecretCombination(this.COLORS, this.COMBINATION_LENGTH);
             console.writeln(`combination: ${secretCombination.setSecretCombination()}`)
+            const board = initBoard();
             let proposedCombination = initProposedCombination(this.COLORS, this.COMBINATION_LENGTH);
             do {
-                proposedCombination.getProposedCombination();
+                proposedCombination.read();
             } while (!this.isGameOver(proposedCombination.getProposedAttemps()))
         },
 
         isGameOver: function (attemps) {
-            return  attemps === this.MAX_ATTEMPTS;
+            return attemps === this.MAX_ATTEMPTS;
         },
         getColors: function () {
             return this.COLORS;
@@ -45,7 +46,7 @@ function initGame() {
     }
 
     function initSecretCombination(colors, length) {
-
+  
         return {
             colors: colors,
             length: length,
@@ -79,13 +80,34 @@ function initGame() {
         }
     }
 
+    function initBoard(){
+        let proposedCombinations = [];
+        return {
+            show : function(){
+                console.writeln(`${getProposedAttemps()} intentos(s):\n****`);
+                for(let proposedCombination of proposedCombinations){
+                    showCombination(proposedCombination);
+                }
+            },
+
+            addCombination : function(combination){
+                proposedCombinations.push(combination);
+            },
+
+            showCombination: function(combination){
+                console.writeln(combination)
+            }
+        }
+        
+
+    }
     function initProposedCombination(colors, combinationLength) {
-        
-        
+
+
         return {
             proposedCombinations: [],
             combintionaLength: combinationLength,
-            getProposedCombination: function () {
+            read: function () {
                 let proposedCombination;
                 do {
                     proposedCombination = console.readString(`Propón una combinación: `);
@@ -112,11 +134,23 @@ function initGame() {
                 return isValid;
             },
 
-            isValidColors : function(proposedCombination){
-                return true;
+            isValidColors: function (proposedCombination) {
+                let valid = true;
+                for (let i = 0; valid && i < proposedCombination.length; i++) {
+                    valid = this.containsColor(proposedCombination[i])
+                }
+                return valid;
+            },
+            containsColor: function (proposedColor) {
+                for (let i = 0; i < colors.length; i++) {
+                    if (colors[i] === proposedColor) {
+                        return true;
+                    }
+                }
+                return false;
             },
 
-            checkRepeatedColors(proposedCombination){
+            checkRepeatedColors(proposedCombination) {
                 return false;
             }
         }
