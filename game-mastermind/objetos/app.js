@@ -28,15 +28,25 @@ function initGame() {
         getCombinationLength() {
             const COMBINATION_LENGTH = 4;
             return COMBINATION_LENGTH;
+        },
+        getRandomColor() {
+            return this.getColors()[parseInt(Math.random() * this.getColors.length)];
+        },
+        checkRepeatedColors(color, arrayColors) {
+            for (let i = 0; i < arrayColors.length; i++) {
+                if (arrayColors[i] === color) {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
     return {
         play: function () {
             console.writeln(`----- MASTERMIND -----`);
-            const secretCombination = initSecretCombination(this.COLORS, this.COMBINATION_LENGTH);
-            console.writeln(`combination: ${secretCombination.setSecretCombination()}`)
-            const board = initBoard();
+            const board = initBoard(gameSettings);
+            board.setSecretCombination();
             let proposedCombination = initProposedCombination(this.COLORS, this.COMBINATION_LENGTH);
             do {
                 proposedCombination.read();
@@ -44,44 +54,27 @@ function initGame() {
         }
     }
 
-    function initSecretCombination(colors, length) {
-
+    function initSecretCombination(gameSettings) {
+        let secretCombination;
         return {
-            colors: colors,
-            length: length,
-
             setSecretCombination: function () {
-                let combination = [];
-                let arrayIndex = [];
-                let index;
-                for (let i = 0; i < length; i++) {
+                let arrayColors = [];
+                for (let i = 1; i < gameSettings.getCombinationLength; i++) {
                     do {
-                        index = parseInt(Math.random() * this.colors.length);
-                    } while (this.isRepeated(index, arrayIndex))
-                    arrayIndex[i] = index;
-                    combination[i] = this.colors[index];
+                        let color = gameSettings.getRandomColor();
+                    } while (gameSettings.checkRepeatedColors(color, arrayColors));
+                    arrayColors[i] = color;
                 }
-                return combination;
+                secretCombination = arrayColors;
             },
-
-            isRepeated: function (element, arrayElements) {
-                let isRepeated = false;
-                for (let i = 0; i < arrayElements.length; i++) {
-                    if (element === arrayElements[i]) {
-                        isRepeated = true;
-                    }
-                }
-                return isRepeated;
-            },
-            getcombination: function () {
-                return this.combination;
-            }
         }
     }
 
-    function initBoard() {
+    function initBoard(gameSettings) {
         let proposedCombinations = [];
         return {
+            secretCombination: initSecretCombination(gameSettings),
+            secretCombination.setSecretCombination(),
             show: function () {
                 console.writeln(`${getProposedAttemps()} intentos(s):\n****`);
                 for (let proposedCombination of proposedCombinations) {
