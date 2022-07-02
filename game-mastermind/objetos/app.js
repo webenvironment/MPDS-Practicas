@@ -1,30 +1,39 @@
 const { Console } = require("console-mpds");
 const console = new Console();
-playMasterMain();
+let masterMind = initMasterMain();
+masterMind.start();
 
-function playMasterMain() {
-    let continueDialog = initYesNoDialog('Quieres jugar de nuevo?');
-    do {
-        const game = initGame();
-        game.play();
-        continueDialog.read();
-    } while (continueDialog.isAfirmative());
+function initMasterMain() {
+    return {
+        continueDialog: initYesNoDialog('Quieres jugar de nuevo?'),
+        start() {
+            do {
+                const game = initGame();
+                game.play();
+                this.continueDialog.read();
+            } while (this.continueDialog.isAfirmative());
+        }
+    }
 }
-
 function initGame() {
-    let game = {
-        turn: 0,
-        MAX_PLAYERS: 2,
-        MAX_ATTEMPTS: 4,
-        nAttempt: 0,
-        COLORS: ["r", "g", "b", "y", "c", "m"],
-        COMBINATION_LENGTH: 4,
-        totalPlayers: 2,
-        //secretCombination: initSecretCombination(this.COLORS, this.COMBINATION_LENGTH),
-        //proposedCombination: initProposedCombination(),
+    let gameSettings = {
+        getColors() {
+            const COLORS = ["r", "g", "b", "y", "c", "m"];
+            return COLORS;
+        },
+        getMaxAttemps() {
+            const MAX_ATTEMPTS = 4;
+            return MAX_ATTEMPTS;
+        },
+        getCombinationLength() {
+            const COMBINATION_LENGTH = 4;
+            return COMBINATION_LENGTH;
+        }
+    }
 
+    return {
         play: function () {
-
+            console.writeln(`----- MASTERMIND -----`);
             const secretCombination = initSecretCombination(this.COLORS, this.COMBINATION_LENGTH);
             console.writeln(`combination: ${secretCombination.setSecretCombination()}`)
             const board = initBoard();
@@ -32,21 +41,11 @@ function initGame() {
             do {
                 proposedCombination.read();
             } while (!this.isGameOver(proposedCombination.getProposedAttemps()))
-        },
-
-        isGameOver: function (attemps) {
-            return attemps === this.MAX_ATTEMPTS;
-        },
-        getColors: function () {
-            return this.COLORS;
-        },
-        getCombinationLength: function () {
-            return this.COMBINATION_LENGTH;
         }
     }
 
     function initSecretCombination(colors, length) {
-  
+
         return {
             colors: colors,
             length: length,
@@ -80,25 +79,25 @@ function initGame() {
         }
     }
 
-    function initBoard(){
+    function initBoard() {
         let proposedCombinations = [];
         return {
-            show : function(){
+            show: function () {
                 console.writeln(`${getProposedAttemps()} intentos(s):\n****`);
-                for(let proposedCombination of proposedCombinations){
+                for (let proposedCombination of proposedCombinations) {
                     showCombination(proposedCombination);
                 }
             },
 
-            addCombination : function(combination){
+            addCombination: function (combination) {
                 proposedCombinations.push(combination);
             },
 
-            showCombination: function(combination){
+            showCombination: function (combination) {
                 console.writeln(combination)
             }
         }
-        
+
 
     }
     function initProposedCombination(colors, combinationLength) {
