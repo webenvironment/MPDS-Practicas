@@ -72,24 +72,21 @@ function initGame() {
 
 function initBoard(gameSettings) {
     let proposedCombinations = [];
-    let results=[];
+    let results = [];
     return {
         secretCombination: initSecretCombination(gameSettings),
         setSecretCombination() {
             this.secretCombination.setSecretCombination();
         },
         show() {
-            for (let i= 0; i<proposedCombinations.length;i++) {
+            for (let i = 0; i < proposedCombinations.length; i++) {
                 console.writeln(`${i + 1} intentos(s):`);
                 console.writeln(`${proposedCombinations[i]}---->${results[i][0]} blacks + ${results[i][1]} whites`);
             }
         },
 
         addCombination(combination) {
-
             proposedCombinations.push(combination);
-          
-            
         },
 
         showCombination: function (combination) {
@@ -100,21 +97,16 @@ function initBoard(gameSettings) {
             return proposedCombinations.length;
         },
 
-        getResults(){
-            let proposedResult=[];
-            proposedResult = [2,0];
-            console.writeln(proposedResult);
-           results.push(this.secretCombination.getResults(proposedCombinations[0]));
-         }
+        getResults() {
+            results.push(this.secretCombination.getResults(proposedCombinations[this.getProposedAttemps() - 1]));
+        }
     }
-
-
 }
 
 function initSecretCombination(gameSettings) {
     let secretCombination;
     return {
-       setSecretCombination: function () {
+        setSecretCombination: function () {
             let arrayColors = [];
             let color;
             for (let i = 0; i < gameSettings.getCombinationLength(); i++) {
@@ -124,31 +116,32 @@ function initSecretCombination(gameSettings) {
                 arrayColors[i] = color;
             }
             secretCombination = arrayColors;
-            console.writeln('secret: ' + arrayColors);
         },
-        getResults(combination){
+        getResults(combination) {
             let blacks = 0;
             let whites = 0;
-            for(let i=0;i<combination.length;i++){
-                for (let j=0;i<secretCombination.length;j++){
-                    if(combination[i]===secretCombination[j]){
-                        if(i===j){
-                           blacks ++;
-                        }else{
-                            whites ++;
+            for (let i = 0; i < combination.length; i++) {
+                for (let j = 0; j < secretCombination.length; j++) {
+                    if (combination[i] === secretCombination[j]) {
+                        if (i === j) {
+                            blacks++;
+                        } else {
+                            whites++;
                         }
-
                     }
+
                 }
             }
-            return [blacks,whites];
+            console.writeln(secretCombination);
+            return [blacks, whites];
+
         }
     }
 }
 
 function initProposedCombination(gameSettings) {
-     let proposedCombination;
-     return {
+    let proposedCombination;
+    return {
         read: function () {
             let combination;
             do {
@@ -157,11 +150,11 @@ function initProposedCombination(gameSettings) {
             this.setProposedCombination(combination);
         },
 
-        setProposedCombination(combination){
+        setProposedCombination(combination) {
             proposedCombination = combination;
         },
 
-        getProposedCombination(){
+        getProposedCombination() {
             return proposedCombination;
         },
 
@@ -180,24 +173,21 @@ function initProposedCombination(gameSettings) {
             return isValid;
         },
 
-        isValidColors(proposedCombination) {
+        isValidColors(combination) {
             let valid = true;
-            for (let i = 0; valid && i < proposedCombination.length; i++) {
-                valid = gameSettings.containsColor(proposedCombination[i])
+            for (let i = 0; valid && i < combination.length; i++) {
+                valid = gameSettings.containsColor(combination[i])
             }
             return valid;
         },
-        checkRepeatedColors(proposedCombination) {
-            let repetitions = 0;
-            for (let i = 0; i < proposedCombination.length; i++) {
-                for (color of proposedCombination) {
-                    if (color === proposedCombination[i]) {
-                        repetitions++;
-                    }
+        checkRepeatedColors(combination) {
+            let repeated = false;
+            for (let i = 0; !repeated && i < combination.length; i++) {
+                for (let j = i + 1; !repeated && j < combination.length; j++) {
+                    repeated = combination[j] === combination[i];
                 }
-                return repetitions > 1;
-
-            }
+            } console.writeln(`repetitions: ${repeated}`);
+            return repeated;
         }
     }
 }
