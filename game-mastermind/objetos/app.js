@@ -49,6 +49,7 @@ function initGame() {
             }
             return false;
         },
+
         isGameOver(proposedAttemps) {
             return proposedAttemps === this.getMaxAttemps();
         }
@@ -65,7 +66,12 @@ function initGame() {
                 board.addCombination(proposedCombination.getProposedCombination());
                 board.getResults();
                 board.show();
-            } while (!gameSettings.isGameOver(board.getProposedAttemps()) || board.isWinner())
+            } while (!gameSettings.isGameOver(board.getProposedAttemps()) && !board.isWinner())
+            if (board.isWinner()) {
+                console.writeln(`Enhorabuena, has ganado!!!!`);
+            } else {
+                console.writeln(`Lo siento, has perdido!!!!`);
+            }
         }
     }
 }
@@ -99,6 +105,10 @@ function initBoard(gameSettings) {
 
         getResults() {
             results.push(this.secretCombination.getResults(proposedCombinations[this.getProposedAttemps() - 1]));
+        },
+
+        isWinner() {
+            return results[results.length - 1][0] === gameSettings.getCombinationLength();
         }
     }
 }
@@ -129,10 +139,8 @@ function initSecretCombination(gameSettings) {
                             whites++;
                         }
                     }
-
                 }
             }
-            console.writeln(secretCombination);
             return [blacks, whites];
 
         }
@@ -186,7 +194,7 @@ function initProposedCombination(gameSettings) {
                 for (let j = i + 1; !repeated && j < combination.length; j++) {
                     repeated = combination[j] === combination[i];
                 }
-            } console.writeln(`repetitions: ${repeated}`);
+            }
             return repeated;
         }
     }
