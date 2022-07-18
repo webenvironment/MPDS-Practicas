@@ -20,7 +20,12 @@ function initGame() {
             do {
                 board.show();
                 board.placeToken();
-            } while (!board.isWinner());
+                if(!board.isTicTacToe()){
+                    board.nextTurn();
+                }
+            } while (!board.isTicTacToe());
+            board.show();
+            board.showWinner();
         }
     }
 }
@@ -32,6 +37,11 @@ function initBoard() {
             [TOKEN_EMPTY, TOKEN_EMPTY, TOKEN_EMPTY],
             [TOKEN_EMPTY, TOKEN_EMPTY, TOKEN_EMPTY]
         ],
+        getCoordinate(title){
+            let coordinate = [];
+            coordinate[0] = console.readNumber(`Fila ${title}`);
+            coordinate[1] = console.readNumber(`Columna ${title}`);
+        }
 
     }
 
@@ -41,10 +51,10 @@ function initBoard() {
             const HORIZONTAL_SEPARTOR = `-------------`;
             const VERTICAL_SEPARATOR = `|`;
             let msg = ``;
-            for (let i = 0; i < tokens.length; i++) {
+            for (let i = 0; i < that.tokens.length; i++) {
                 msg += `${HORIZONTAL_SEPARTOR}\n`;
-                for (let j = 0; j < tokens[i].length; j++) {
-                    msg += `${VERTICAL_SEPARATOR} ${tokens[i][j]} `;
+                for (let j = 0; j < that.tokens[i].length; j++) {
+                    msg += `${VERTICAL_SEPARATOR} ${that.tokens[i][j]} `;
                 }
                 msg += `${VERTICAL_SEPARATOR}\n`;
             }
@@ -56,24 +66,24 @@ function initBoard() {
             let origin = [];
             let target = [];
             if (this.turn.isMovementTurn()) {
-                origin = this.readOrigin();
+                origin = initCoordinate();
+                origin.read('origen ')
             }
-            target = this.readTarget();
+            target = initCoordinate();
+            target.read('destino ');
+            if(that.turn.isMovementTurn()){
+                token[origin]= TOKEN_EMPTY;
+            }
+            token[target]=this.turn.getActiveToken();
         },
+        isTicTacToe(){
 
-        getTokenPlaced() {
-            let empties = 0;
-            for (let i = 0; i < tokens.length; i++) {
-                for (let j = 0; j < tokens[i].length; j++) {
-                    if (tokens[i][j] === TOKEN_EMPTY) {
-                        empties++;
-                    }
-                }
-            }
-            return 
-        },
+        }
+
+    
     }
 }
+
 
 
 
