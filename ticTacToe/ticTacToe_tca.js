@@ -17,11 +17,11 @@ function initGame() {
 
     return {
         play() {
+            board = initBoard();
             do {
                 board.show();
                 board.placeToken();
-                if(!board.isTicTacToe()){
-                    board.nextTurn();
+                if (!board.isTicTacToe()) {
                 }
             } while (!board.isTicTacToe());
             board.show();
@@ -30,31 +30,48 @@ function initGame() {
     }
 }
 function initBoard() {
+    
     let that = {
         TOKEN_EMPTY: ' ',
-        tokens: [
-            [TOKEN_EMPTY, TOKEN_EMPTY, TOKEN_EMPTY],
-            [TOKEN_EMPTY, TOKEN_EMPTY, TOKEN_EMPTY],
-            [TOKEN_EMPTY, TOKEN_EMPTY, TOKEN_EMPTY]
-        ],
-        getCoordinate(title){
-            let coordinate = [];
-            coordinate[0] = console.readNumber(`Fila ${title}`);
-            coordinate[1] = console.readNumber(`Columna ${title}`);
-        }
+        MAX_TOKENS: 3,
+        tokens: [],
+        createBoard(){
+            for(let i=0; i<3; i++){
+                this.tokens.push([]);
+                for(let j= 0; j<this.MAX_TOKENS; j++){
+                    this.tokens[i].push(this.TOKEN_EMPTY);
+                }
+            }
+        },
+        getMaxTokens() {
+            return this.MAX_TOKENS;
+        },
+        getTokens() {
+            return this.tokens;
+        },
+        isMovement(turnCount) {
+            if(turnCount > this.MAX_TOKENS * 2){
+                return true;
+            }
+            return false;
+            
+        },
 
     }
-
+    that.createBoard();
     return {
+        
         turn: initTurn(),
+
+        
         show() {
             const HORIZONTAL_SEPARTOR = `-------------`;
             const VERTICAL_SEPARATOR = `|`;
             let msg = ``;
-            for (let i = 0; i < that.tokens.length; i++) {
+            for (let i = 0; i < that.getTokens().length; i++) {
                 msg += `${HORIZONTAL_SEPARTOR}\n`;
-                for (let j = 0; j < that.tokens[i].length; j++) {
-                    msg += `${VERTICAL_SEPARATOR} ${that.tokens[i][j]} `;
+                for (let j = 0; j < that.getTokens()[i].length; j++) {
+                    msg += `${VERTICAL_SEPARATOR} ${that.getTokens()[i][j]} `;
                 }
                 msg += `${VERTICAL_SEPARATOR}\n`;
             }
@@ -65,22 +82,75 @@ function initBoard() {
         placeToken() {
             let origin = [];
             let target = [];
-            if (this.turn.isMovementTurn()) {
-                origin = initCoordinate();
-                origin.read('origen ')
+            console.writeln(`\nTurno para: ${this.turn.getActiveToken()}`)
+            if (that.isMovement(this.turn.getTurnCount())) {
+                origin = initCoordinate(that.getMaxTokens());
+                origin.readCoordinate('origen ');
             }
-            target = initCoordinate();
-            target.read('destino ');
-            if(that.turn.isMovementTurn()){
-                token[origin]= TOKEN_EMPTY;
+            target = initCoordinate(that.getMaxTokens());
+            target.readCoordinate('destino ');
+            if (that.isMovement(this.turn.getTurnCount())) {
+                that.tokens[origin.getRow()][origin.getColumn()] = that.TOKEN_EMPTY;
             }
-            token[target]=this.turn.getActiveToken();
+            that.tokens[target.getRow()][target.getColumn()] = this.turn.getActiveToken();
+            this.turn.nextTurn();
         },
-        isTicTacToe(){
-
+        isTicTacToe() {
+            return false;
         }
 
-    
+
+    }
+}
+
+function initTurn(){
+    let activeToken = 'X';
+    let turnCount = 1;
+    return{
+        nextTurn(){
+            activeToken = activeToken === 'X' ? 'O' : 'X';
+            turnCount++;
+        },
+        getActiveToken(){
+            return activeToken;
+        },
+        getTurnCount(){
+            return turnCount;
+        }
+
+    }
+}
+
+function initCoordinate(maxTokens) {
+    //let maxTokens = maxTokens;
+    let row;
+    let column;
+    function read(title) {
+        let choice;
+        let error;
+        do {
+            choice = console.readNumber(`${title}`);
+            error = choice < 1 || maxTokens < choice;
+            if(error){
+                console.writeln(`Por favor un numero entre 1 y ${maxTokens} inclusives`)
+            }
+        } while (error);
+        return choice -1;
+    }
+    return {
+        readCoordinate(title) {
+            row = read(`Fila ${title}`);
+            column = read(`Columna ${title}`);
+        },
+        getCoordinate(){
+            return `${row}[${column}]`;
+        },
+        getRow(){
+            return row;
+        },
+        getColumn(){
+            return column;
+        }
     }
 }
 
