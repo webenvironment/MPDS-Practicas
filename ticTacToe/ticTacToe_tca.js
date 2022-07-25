@@ -30,15 +30,15 @@ function initGame() {
     }
 }
 function initBoard() {
-    
+
     let that = {
         TOKEN_EMPTY: ' ',
         MAX_TOKENS: 3,
         tokens: [],
-        createBoard(){
-            for(let i=0; i<3; i++){
+        createBoard() {
+            for (let i = 0; i < 3; i++) {
                 this.tokens.push([]);
-                for(let j= 0; j<this.MAX_TOKENS; j++){
+                for (let j = 0; j < this.MAX_TOKENS; j++) {
                     this.tokens[i].push(this.TOKEN_EMPTY);
                 }
             }
@@ -50,20 +50,24 @@ function initBoard() {
             return this.tokens;
         },
         isMovement(turnCount) {
-            if(turnCount > this.MAX_TOKENS * 2){
+            if (turnCount > this.MAX_TOKENS * 2) {
                 return true;
             }
             return false;
-            
         },
-
+        isEmpty(coordinate) {
+            return this.tokens[coordinate.getRow()][coordinate.getColumn()] === this.TOKEN_EMPTY;
+        },
+        isPlayerToken(coordinate, turn) {
+            return this.tokens[coordinate.getRow()][coordinate.getColumn()] === turn.getActiveToken();
+        }
     }
     that.createBoard();
     return {
-        
+
         turn: initTurn(),
 
-        
+
         show() {
             const HORIZONTAL_SEPARTOR = `-------------`;
             const VERTICAL_SEPARATOR = `|`;
@@ -85,10 +89,20 @@ function initBoard() {
             console.writeln(`\nTurno para: ${this.turn.getActiveToken()}`)
             if (that.isMovement(this.turn.getTurnCount())) {
                 origin = initCoordinate(that.getMaxTokens());
-                origin.readCoordinate('origen ');
+                do {
+                    origin.readCoordinate('origen ');
+                    if (!that.isPlayerToken(origin, this.turn)) {
+                        console.writeln(`No hay una ficha de la propiedad ${this.turn.getActiveToken()} en la celda indicada.`)
+                    }
+                } while (!that.isPlayerToken(origin, this.turn));
             }
             target = initCoordinate(that.getMaxTokens());
-            target.readCoordinate('destino ');
+            do {
+                target.readCoordinate('destino ');
+                if (!that.isEmpty(target)) {
+                    console.writeln(`Indique una celda vacía`);
+                }
+            } while (!that.isEmpty(target));
             if (that.isMovement(this.turn.getTurnCount())) {
                 that.tokens[origin.getRow()][origin.getColumn()] = that.TOKEN_EMPTY;
             }
@@ -103,18 +117,18 @@ function initBoard() {
     }
 }
 
-function initTurn(){
+function initTurn() {
     let activeToken = 'X';
     let turnCount = 1;
-    return{
-        nextTurn(){
+    return {
+        nextTurn() {
             activeToken = activeToken === 'X' ? 'O' : 'X';
             turnCount++;
         },
-        getActiveToken(){
+        getActiveToken() {
             return activeToken;
         },
-        getTurnCount(){
+        getTurnCount() {
             return turnCount;
         }
 
@@ -131,24 +145,24 @@ function initCoordinate(maxTokens) {
         do {
             choice = console.readNumber(`${title}`);
             error = choice < 1 || maxTokens < choice;
-            if(error){
+            if (error) {
                 console.writeln(`Por favor un numero entre 1 y ${maxTokens} inclusives`)
             }
         } while (error);
-        return choice -1;
+        return choice - 1;
     }
     return {
         readCoordinate(title) {
             row = read(`Fila ${title}`);
             column = read(`Columna ${title}`);
         },
-        getCoordinate(){
+        getCoordinate() {
             return `${row}[${column}]`;
         },
-        getRow(){
+        getRow() {
             return row;
         },
-        getColumn(){
+        getColumn() {
             return column;
         }
     }
