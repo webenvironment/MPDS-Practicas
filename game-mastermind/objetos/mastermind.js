@@ -48,7 +48,9 @@ function initBoard() {
         show() {
             for (let i = 0; i < proposedCombinations.length; i++) {
                 console.writeln(`\n${i + 1} intentos(s):`);
-                console.writeln(`${proposedCombinations[i]}---->${results[i].getBlacks()} blacks + ${results[i].getWhites()} whites`);
+                //console.writeln(`${proposedCombinations[i]}---->${results[i].getBlacks()} blacks + ${results[i].getWhites()} whites`);
+                console.write(`${proposedCombinations[i]}---->`);
+                results[i].show();
             }
         },
 
@@ -63,7 +65,6 @@ function initBoard() {
 }
 
 function initSecretCombination() {
-    
     let that = {
         secretCombination: [],
         combination: initCombination(),
@@ -91,7 +92,7 @@ function initSecretCombination() {
             return false;
         },
     }
-    that.setSecretCombination();console.writeln(`SecretC: ${that.secretCombination}`);
+    that.setSecretCombination();
     return {
         getResults(proposedCombination) {
             let blacks = 0;
@@ -190,6 +191,10 @@ function initResults(blacks, whites) {
         },
         getWhites() {
             return whites;
+        },
+        show(){
+            //console.writeln(`${this.getBlacks()} blacks + ${this.getWhites()} whites`);
+            console.writeln(`${blacks} blacks + ${whites} whites`);
         }
     }
 }
